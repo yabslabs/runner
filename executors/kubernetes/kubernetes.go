@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"fmt"
+	"io/ioutil"
 	"io"
 	"os"
 
@@ -111,6 +112,11 @@ type KubernetesExecutor struct {
 }
 
 func CreateKubernetesExecutor()(*KubernetesExecutor, error){
+	config, err := configuration.ReadConfig()
+	if err != nil {
+		log.Error(err, "unable to set up client config")
+		return nil, err
+	}
 	cfg, err := config.GetConfig()
 		if err != nil {
 			log.Error(err, "unable to set up client config")
@@ -126,14 +132,30 @@ func CreateKubernetesExecutor()(*KubernetesExecutor, error){
 		log.Error(err, "unable to get clientset")
 		return nil, err
 	}
+	namespace, err := GetNamespaceFromFile()
+	if err != nil {
+		log.Error(err, "unable to read namespacefile")
+		return nil, err
+	}
 	return KubernetesExecutor{
 		PodName: hostname,
 		Client: clientset,
 		Config: cfg,
+		Namespace: namespace,
 	}, nil
 }
 
 
 func GetClientSet(config *rest.Config) (*kubernetes.Clientset, error) {
 	return kubernetes.NewForConfig(config)
+}
+
+func GetNamespaceFromFile()(string,error){
+	
+	b, err := ioutil.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace") 
+    if err != nil {
+		fmt.Print(err)
+		
+	}
+	return b,err
 }
