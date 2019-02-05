@@ -6,18 +6,8 @@ type RunnerStatus int
 // RunnerStatus implementation as enum
 const (
 	UNKNOWN RunnerStatus = iota
-	CREATED
-	PENDING // or RUNNING?
-	READY
-	BUSY
-	UNREACHABLE
-	ERROR // or FAILED?
-	STUCK
+	ACTIVE
 	PAUSED
-	SUSPENDED
-	// are these states of a runner or a job?
-	// SUCCEEDED
-	// CANCELED
-	SKIPPED
-	RETRIED
+	ONLINE
+	OFFLINE
 )
